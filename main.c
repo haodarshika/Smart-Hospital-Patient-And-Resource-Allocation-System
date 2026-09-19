@@ -42,11 +42,36 @@ int allocateBed(int targetWardId){
     }
     return -1;
 }
+void registrationPatient(void){
+    if (patientCount>=maxRecords){
+        printf("\nSystem Full! Cannot register more patients.\n");
+        return;
+    }
+    printf("\n----Patient Registration-----\n");
+    printf("Enter Patient Name:");
+    scanf("%[^\n]s",patientNames[patientCount]);
+    printf("Enter Age:");
+    scanf ("%d",&patientAges[patientCount]);
+    printf("Enter Triage Level (1- Emergency,2- Urgent,3-Routine):");
+    scanf("%d",&triageLevel[patientCount]);
+    printf("\nSelect Specialty Choice:\n");
+    for(int i=0;i<4;i++){
+        printf("%d. %s\n",i+1 , specialityTitles[i]);
+    }
+    printf("Choice (1-4):");
+    scanf("%d",&specialtyChoice[patientCount]);
+    isAdmitted[patientCount]=0;
+    assignedWard[patientCount]= -1;
+    stayDays[patientCount]=0;
+    printf("\nPatient registered successfully!(Patient ID:%d)\n",patientCount +1);
+    patientCount++;
+}
+
 
 int main(void){
     initHospitalData();
-    printf("------Smart Hospital and Resource Allocation System -----\n");
-    printf("Hospital system initialized successfully.\n");
+    registrationPatient();
+
     return 0;
 
 }
