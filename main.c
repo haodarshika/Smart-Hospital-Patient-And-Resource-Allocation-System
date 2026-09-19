@@ -33,11 +33,22 @@ void initHospitalData(void){
             }
       }
 }
+int allocateBed(int targetWardId){
+    int wIdx =targetWardId-1;
+    for (int slot =0;slot<wardCapacities[wIdx];slot++){
+         if(bedMatrix[wIdx][slot]==0){
+            return slot +1;
+         }
+    }
+    return -1;
+}
+
 int main(void){
     initHospitalData();
     printf("------Smart Hospital and Resource Allocation System -----\n");
     printf("Hospital system initialized successfully.\n");
     return 0;
+
 }
 
 
