@@ -21,10 +21,26 @@ int specialityQueueTracker[4]={0,0,0,0};
 const char wardNames[4][30]={"General Ward","Paediatric Ward","Surgical Ward","ICU"};
 const float wardDailyRates[4]={3000.00, 6000.00,12000.00,25000.00};
 const int  wardCapacities[4]={20,10,10,5};
-int main(void) {
-    printf("----- Smart Hospital and Resource Allocation System -----\n");
+
+
+
+int bedMatrix[4][20];
+void initHospitalData(void){
+      int w,b;
+      for (w=0;w<4;w++){
+            for (b=0;b<20;b++){
+                    bedMatrix[w][b]=0;
+            }
+      }
+}
+int main(void){
+    initHospitalData();
+    printf("------Smart Hospital and Resource Allocation System -----\n");
+    printf("Hospital system initialized successfully.\n");
     return 0;
 }
+
+
 
 
 
