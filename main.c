@@ -7,18 +7,14 @@
 
 char patientNames[maxRecords][50];
 int patientAges[maxRecords];
-
 int patientTriageLevels[maxRecords];
-
 int patientSpecialtyChoices[maxRecords];
-
 int patientAdmittedStatuses[maxRecords];
-
 int patientWards[maxRecords];
-
 int patientStayDays[maxRecords];
 
-int patientCount = 0;
+int patientCount =0;
+
 
 const char specialtyList[4][30] = {"General Practical (OPD)", "Paediatrics", "Cardiology", "Neurology"};
 const float specialtyFees[4] = {1500.00, 2500.00, 4500.00, 5000.00};
@@ -51,8 +47,7 @@ int findAvailableBed(int wardId) {
 }
 
 void addPatientRecord(void) {
-    if (patientCount >= maxRecords)
-{
+    if (patientCount >= maxRecords) {
         printf("\nSystem Full! Cannot register more patients.\n");
         return;
     }
@@ -75,20 +70,42 @@ void addPatientRecord(void) {
     printf("Choice (1-4): ");
     scanf("%d", &patientSpecialtyChoices[patientCount]);
 
-    // Increment queue tracker for selected specialty
+
     int selectedSpecialtyIndex = patientSpecialtyChoices[patientCount] - 1;
     if (selectedSpecialtyIndex >= 0 && selectedSpecialtyIndex < 4) {
         specialtyQueueTrackers[selectedSpecialtyIndex]++;
     }
 
-    patientAdmittedStatuses[patientCount] = 0;
-    patientWards[patientCount] = -1;
-    patientStayDays[patientCount] = 0;
+
+    printf("\nIs Admitted to Ward? (1- Yes, 0- No): ");
+    scanf("%d", &patientAdmittedStatuses[patientCount]);
+
+    if (patientAdmittedStatuses[patientCount] == 1) {
+        printf("\nSelect Ward:\n");
+        for (int i = 0; i < 4; i++) {
+            printf("%d. %s\n", i + 1, wardList[i]);
+        }
+        printf("Choice (1-4): ");
+        scanf("%d", &patientWards[patientCount]);
+
+        printf("Enter Days Stayed: ");
+        scanf("%d", &patientStayDays[patientCount]);
+
+        int bNum = findAvailableBed(patientWards[patientCount]);
+        if (bNum != -1) {
+            wardBeds[patientWards[patientCount] - 1][bNum - 1] = 1;
+            printf("Bed #%d booked.\n", bNum);
+        } else {
+            printf("Ward full!\n");
+        }
+    } else {
+        patientWards[patientCount] = -1;
+        patientStayDays[patientCount] = 0;
+    }
 
     patientCount++;
     printf("\nPatient registered successfully!(Patient ID:%d)\n", patientCount);
     printf("----------------------------------------\n");
-
 
     printf("\n    SPECIALITY QUEUE SUMMARY\n");
     printf("----------------------------------------\n");
@@ -104,3 +121,4 @@ int main(void) {
     addPatientRecord();
     return 0;
 }
+
