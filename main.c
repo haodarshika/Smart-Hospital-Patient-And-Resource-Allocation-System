@@ -13,7 +13,7 @@ int patientAdmittedStatuses[maxRecords];
 int patientWards[maxRecords];
 int patientStayDays[maxRecords];
 
-int patientCount =0;
+int patientCount = 0;
 
 
 const char specialtyList[4][30] = {"General Practical (OPD)", "Paediatrics", "Cardiology", "Neurology"};
@@ -76,7 +76,6 @@ void addPatientRecord(void) {
         specialtyQueueTrackers[selectedSpecialtyIndex]++;
     }
 
-
     printf("\nIs Admitted to Ward? (1- Yes, 0- No): ");
     scanf("%d", &patientAdmittedStatuses[patientCount]);
 
@@ -116,9 +115,50 @@ void addPatientRecord(void) {
     }
 }
 
+
+void calculateBill(int pIdx) {
+    if (pIdx < 0 || pIdx >= patientCount) {
+        printf("Invalid patient ID!\n");
+        return;
+    }
+
+    int sIdx = patientSpecialtyChoices[pIdx] - 1;
+    float base = specialtyFees[sIdx];
+
+
+    float surcharge = 0;
+    if (patientTriageLevels[pIdx] == 2) surcharge = base * 0.20;
+    else if (patientTriageLevels[pIdx] == 3) surcharge = base * 0.50;
+
+
+    float wardTotal = 0;
+    if (patientAdmittedStatuses[pIdx] == 1) {
+        int wIdx = patientWards[pIdx] - 1;
+        wardTotal = patientStayDays[pIdx] * wardDailyRates[wIdx];
+    }
+
+    float gross = base + surcharge + wardTotal;
+
+
+    float discount = 0;
+    if (patientAges[pIdx] < 5 || patientAges[pIdx] > 65) {
+        discount = gross * 0.15;
+    }
+
+    float net = gross - discount;
+
+    printf("\n--- PATIENT BILL ---\n");
+    printf("Name: %s\n", patientNames[pIdx]);
+    printf("Base Fee: LKR %.2f\n", base);
+    printf("Surcharge: LKR %.2f\n", surcharge);
+    printf("Ward Charge: LKR %.2f\n", wardTotal);
+    printf("Gross Amount: LKR %.2f\n", gross);
+    printf("Discount: LKR %.2f\n", discount);
+    printf("Net Total: LKR %.2f\n", net);
+}
+
 int main(void) {
     setupSystem();
     addPatientRecord();
     return 0;
 }
-
