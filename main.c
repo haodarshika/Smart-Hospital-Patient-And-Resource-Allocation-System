@@ -3,8 +3,6 @@
 #include <string.h>
 
 #define maxRecords 100
-
-
 char patientNames[maxRecords][50];
 int patientAges[maxRecords];
 int patientTriageLevels[maxRecords];
@@ -60,7 +58,8 @@ void addPatientRecord(void) {
     printf("Enter Age: ");
     scanf("%d", &patientAges[patientCount]);
 
-    printf("Enter Triage Level (1- Emergency, 2- Urgent, 3-Routine): ");
+
+    printf("Enter Urgency Level (1- Normal, 2- Urgent, 3- Critical): ");
     scanf("%d", &patientTriageLevels[patientCount]);
 
     printf("\nSelect Specialty Choice:\n");
@@ -69,7 +68,6 @@ void addPatientRecord(void) {
     }
     printf("Choice (1-4): ");
     scanf("%d", &patientSpecialtyChoices[patientCount]);
-
 
     int selectedSpecialtyIndex = patientSpecialtyChoices[patientCount] - 1;
     if (selectedSpecialtyIndex >= 0 && selectedSpecialtyIndex < 4) {
@@ -103,7 +101,7 @@ void addPatientRecord(void) {
     }
 
     patientCount++;
-    printf("\nPatient registered successfully!(Patient ID:%d)\n", patientCount);
+    printf("\nPatient registered successfully!(Patient ID: PAT-%d)\n", 1000 + patientCount);
     printf("----------------------------------------\n");
 
     printf("\n    SPECIALITY QUEUE SUMMARY\n");
@@ -114,7 +112,6 @@ void addPatientRecord(void) {
                idx + 1, specialtyList[idx], specialtyQueueTrackers[idx], estimatedWaitTime);
     }
 }
-
 
 void calculateBill(int pIdx) {
     if (pIdx < 0 || pIdx >= patientCount) {
@@ -129,7 +126,6 @@ void calculateBill(int pIdx) {
     float surcharge = 0;
     if (patientTriageLevels[pIdx] == 2) surcharge = base * 0.20;
     else if (patientTriageLevels[pIdx] == 3) surcharge = base * 0.50;
-
 
     float wardTotal = 0;
     if (patientAdmittedStatuses[pIdx] == 1) {
@@ -148,17 +144,63 @@ void calculateBill(int pIdx) {
     float net = gross - discount;
 
     printf("\n--- PATIENT BILL ---\n");
+    printf("Patient ID: PAT-%d\n", 1000 + pIdx + 1);
     printf("Name: %s\n", patientNames[pIdx]);
     printf("Base Fee: LKR %.2f\n", base);
     printf("Surcharge: LKR %.2f\n", surcharge);
     printf("Ward Charge: LKR %.2f\n", wardTotal);
     printf("Gross Amount: LKR %.2f\n", gross);
-    printf("Discount: LKR %.2f\n", discount);
+    printf("Discount: LKR -%.2f\n", discount);
     printf("Net Total: LKR %.2f\n", net);
+}
+
+
+void sortPatientsByPriority(void) {
+    for (int i = 0; i < patientCount - 1; i++) {
+        for (int j = 0; j < patientCount - i - 1; j++) {
+            if (patientTriageLevels[j] < patientTriageLevels[j + 1]) {
+
+                char tempName[50];
+                strcpy(tempName, patientNames[j]);
+                strcpy(patientNames[j], patientNames[j + 1]);
+                strcpy(patientNames[j + 1], tempName);
+
+                int tempAge = patientAges[j];
+                patientAges[j] = patientAges[j + 1];
+                patientAges[j + 1] = tempAge;
+
+                int tempTriage = patientTriageLevels[j];
+                patientTriageLevels[j] = patientTriageLevels[j + 1];
+                patientTriageLevels[j + 1] = tempTriage;
+
+                int tempSpec = patientSpecialtyChoices[j];
+                patientSpecialtyChoices[j] = patientSpecialtyChoices[j + 1];
+                patientSpecialtyChoices[j + 1] = tempSpec;
+
+                int tempAdm = patientAdmittedStatuses[j];
+                patientAdmittedStatuses[j] = patientAdmittedStatuses[j + 1];
+                patientAdmittedStatuses[j + 1] = tempAdm;
+
+                int tempWard = patientWards[j];
+                patientWards[j] = patientWards[j + 1];
+                patientWards[j + 1] = tempWard;
+
+                int tempDays = patientStayDays[j];
+                patientStayDays[j] = patientStayDays[j + 1];
+                patientStayDays[j + 1] = tempDays;
+            }
+        }
+    }
 }
 
 int main(void) {
     setupSystem();
     addPatientRecord();
+
+    if (patientCount > 0) {
+        calculateBill(0);
+        sortPatientsByPriority();
+    }
+
     return 0;
 }
